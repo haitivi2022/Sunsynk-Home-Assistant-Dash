@@ -1,6 +1,6 @@
 substitutions:
   settings_skipped_updates: "30"
-  devicename: "inverter"
+  devicename: "esp32-deye"
   device_description: "Inverter RS485 Logger"
   friendly_name: "SunSynk"
   
@@ -24,22 +24,11 @@ substitutions:
 esphome:
   name: $devicename
   comment: '${device_description}'
-  
-esp32:
-  board: nodemcu-32s
-  framework:
-    type: arduino
 
-# Enable webserver
-web_server:
-  port: 80
-  auth:
-    username: !secret web_server_username
-    password: !secret web_server_password
-  version: 2
-  log: false
-  ota: false
-  include_internal: false  # Don't expose internal sensors on web UI
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
 
 # Enable logging
 logger:
@@ -48,11 +37,11 @@ logger:
 # Enable Home Assistant API
 api:
   encryption:
-    key: !secret api_encryption_key
+    key: ""
 
 ota:
-  password: !secret ota_password_sunsynk
-  platform: esphome
+  - platform: esphome
+    password: ""
 
 wifi:
   ssid: !secret wifi_ssid
@@ -60,11 +49,8 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: '${devicename}'
-    password: !secret fallback_password
-
-  fast_connect: true
-  power_save_mode: none
+    ssid: "Esp32-Deye Fallback Hotspot"
+    password: "506Fxr4vhXhE"
 
 captive_portal:
 
@@ -72,7 +58,7 @@ captive_portal:
 # https://esphome.io/components/time.html#home-assistant-time-source
 time:
   - platform: homeassistant
-    id: homeassistant_time
+    id: ha_time
 
 # Globals for conditional polling state management
 globals:
@@ -181,18 +167,26 @@ script:
             ESP_LOGI("Polling", "Update interval: %d ms | PV: %.0fW, Batt: %.0fW, Load: %.0fW, Grid: %.0fW", 
                      new_interval, pv_power, battery_power, load_power, grid_power);
           }
-     
+
 uart:
-  id: mod_bus
-  tx_pin: GPIO1
-  rx_pin: GPIO3
+  id: uart_modbus
+  tx_pin: GPIO17
+  rx_pin: GPIO16
   baud_rate: 9600
+  data_bits: 8
   stop_bits: 1
+  parity: NONE
+  #tx_enable_pin: GPIO4   # bật nếu dùng MAX485 thủ công
  
+#modbus:
+  #id: inverter_modbus
+  #flow_control_pin: GPIO16
+
 modbus:
   id: inverter_modbus
-  flow_control_pin: GPIO16
- 
+  uart_id: uart_modbus
+  send_wait_time: 300ms
+
 modbus_controller:
   - id: inverter
     address: 0x01
