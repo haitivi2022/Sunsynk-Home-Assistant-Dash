@@ -90,48 +90,48 @@ Added remaining battery time. You will need to add the following template sensor
     battery_cap:
       friendly_name: "Battery Capacity"
       value_template: >
-        {% set grid_online = states('binary_sensor.sunsynk_grid_connected_status') %}
+        {% set grid_online = states('binary_sensor.esp32_deye_deye_grid_connected_status') %}
         {% if grid_online  == 'off'%}
-          {{ states('sensor.sunsynk_battery_capacity_shutdown') | int }}
+          {{ states('sensor.esp32_deye_deye_battery_capacity_shutdown') | int }}
         {% else %}
           {% set now = strptime(as_timestamp(now()) | timestamp_custom('%H:%M'), '%H:%M') %}
-          {% set sellTime1 = strptime(states('sensor.sunsynk_time_slot_1'), '%H:%M') %}
-          {% set sellTime2 = strptime(states('sensor.sunsynk_time_slot_2'), '%H:%M') %}
-          {% set sellTime3 = strptime(states('sensor.sunsynk_time_slot_3'), '%H:%M') %}
-          {% set sellTime4 = strptime(states('sensor.sunsynk_time_slot_4'), '%H:%M') %}
-          {% set sellTime5 = strptime(states('sensor.sunsynk_time_slot_5'), '%H:%M') %}
-          {% set sellTime6 = strptime(states('sensor.sunsynk_time_slot_6'), '%H:%M') %}
+          {% set sellTime1 = strptime(states('sensor.esp32_deye_deye_time_slot_1'), '%H:%M') %}
+          {% set sellTime2 = strptime(states('sensor.esp32_deye_deye_time_slot_2'), '%H:%M') %}
+          {% set sellTime3 = strptime(states('sensor.esp32_deye_deye_time_slot_3'), '%H:%M') %}
+          {% set sellTime4 = strptime(states('sensor.esp32_deye_deye_time_slot_4'), '%H:%M') %}
+          {% set sellTime5 = strptime(states('sensor.esp32_deye_deye_time_slot_5'), '%H:%M') %}
+          {% set sellTime6 = strptime(states('sensor.esp32_deye_deye_time_slot_6'), '%H:%M') %}
           {% if now >= sellTime1 and now < sellTime2 %}
-            {{ states('number.sunsynk_prog1_capacity') | int }}
+            {{ states('number.esp32_deye_deye_prog1_capacity') | int }}
           {% elif now >= sellTime2 and now < sellTime3 %}
-            {{ states('number.sunsynk_prog2_capacity') | int }}
+            {{ states('number.esp32_deye_deye_prog2_capacity') | int }}
           {% elif now >= sellTime3 and now < sellTime4 %}
-            {{ states('number.sunsynk_prog3_capacity') | int }}
+            {{ states('number.esp32_deye_deye_prog3_capacity') | int }}
           {% elif now >= sellTime4 and now < sellTime5 %}
-            {{ states('number.sunsynk_prog4_capacity') | int }}
+            {{ states('number.esp32_deye_deye_prog4_capacity') | int }}
           {% elif now >= sellTime5 and now < sellTime6 %}
-            {{ states('number.sunsynk_prog5_capacity') | int }}
+            {{ states('number.esp32_deye_deye_prog5_capacity') | int }}
           {% elif now >= sellTime6 or now < sellTime1 %}
-            {{ states('number.sunsynk_prog6_capacity') | int }}
+            {{ states('number.esp32_deye_deye_prog6_capacity') | int }}
           {% else %}
-            {{ states('sensor.sunsynk_battery_capacity_shutdown') | int }}
+            {{ states('sensor.esp32_deye_deye_battery_capacity_shutdown') | int }}
           {% endif %}
         {% endif %}
     soc_battery_time_left:
       friendly_name: "Battery Depletion Seconds"
       unit_of_measurement: Seconds
       value_template: >
-        {% set state = states('sensor.sunsynk_battery_power') | int %}
+        {% set state = states('sensor.esp32_deye_deye_battery_power') | int %}
         {% set cap = states('sensor.battery_cap') | float %}
         {% if state == 0 -%}
-        {{ ((((states('sensor.sunsynk_battery_soc') | float - cap) /100) * 15960) / (1) * 60 * 60 ) | timestamp_custom('%s', 0) }}
+        {{ ((((states('sensor.esp32_deye_deye_battery_soc') | float - cap) /100) * 15960) / (1) * 60 * 60 ) | timestamp_custom('%s', 0) }}
         {%- else -%}
-        {{ ((((states('sensor.sunsynk_battery_soc') | float - cap) /100) * 15960) / (states('sensor.sunsynk_battery_power') | float) * 60 * 60 ) | timestamp_custom('%s', 0) }}
+        {{ ((((states('sensor.esp32_deye_deye_battery_soc') | float - cap) /100) * 15960) / (states('sensor.esp32_deye_deye_battery_power') | float) * 60 * 60 ) | timestamp_custom('%s', 0) }}
         {%- endif %}
     soc_battery_time_left_friendly:
       friendly_name: "Battery Depletion Time"
       value_template: >
-        {% set state = states('sensor.sunsynk_battery_power') | int %}
+        {% set state = states('sensor.esp32_deye_deye_battery_power') | int %}
         {% if state > 0 -%}
         {%- set time = states('sensor.soc_battery_time_left') | int %}
         {%- set minutes = ((time % 3600) // 60) %}
@@ -148,8 +148,8 @@ Added remaining battery time. You will need to add the following template sensor
       friendly_name: "Battery Charging Time Left"
       unit_of_measurement: Seconds
       value_template: >
-        {% set power = states('sensor.sunsynk_battery_power') | float %}
-        {% set soc = states('sensor.sunsynk_battery_soc') | float %}
+        {% set power = states('sensor.esp32_deye_deye_battery_power') | float %}
+        {% set soc = states('sensor.esp32_deye_deye_battery_soc') | float %}
         {% set cap = states('sensor.battery_cap') | float %}
         {% if power < 0 %}
           {% if soc < cap %}
@@ -163,7 +163,7 @@ Added remaining battery time. You will need to add the following template sensor
     battery_charging_time_left_friendly:
       friendly_name: "Battery Charging Time"
       value_template: >
-        {% set state = states('sensor.sunsynk_battery_power') | int %}
+        {% set state = states('sensor.esp32_deye_deye_battery_power') | int %}
         {% if state < 0 -%}
           {%- set time = states('sensor.battery_charging_time_left') | int %}
           {%- set minutes = ((time % 3600) // 60) %}
@@ -179,7 +179,7 @@ Added remaining battery time. You will need to add the following template sensor
     markdown_battery_charge_time_left:
       friendly_name: "Markdown Battery Charging Time"
       value_template: >
-        {% if states('sensor.sunsynk_battery_soc') | float < states('sensor.battery_cap') | float %}
+        {% if states('sensor.esp32_deye_deye_battery_soc') | float < states('sensor.battery_cap') | float %}
           {{ states('sensor.battery_cap') | float | round(0) }}
         {% else %}
           100
@@ -214,24 +214,24 @@ These following example cards can be used to set system timer settings
 type: vertical-stack
 cards:
   - type: tile
-    entity: switch.sunsynk_toggle_system_timer
+    entity: switch.esp32_deye_deye_toggle_system_timer
     icon: mdi:timer-outline
     vertical: true
   - type: horizontal-stack
     cards:
       - type: entities
         entities:
-          - entity: select.sunsynk_energy_pattern
+          - entity: select.esp32_deye_deye_energy_pattern
             name: Energy Pattern
         state_color: true
       - type: entities
         entities:
-          - entity: select.sunsynk_work_mode
+          - entity: select.esp32_deye_deye_work_mode
             name: Work Mode
         state_color: true
   - type: entities
     entities:
-      - entity: switch.sunsynk_prog1_grid_charge
+      - entity: switch.esp32_deye_deye_prog1_grid_charge
         type: custom:multiple-entity-row
         name: Program 1
         toggle: true
@@ -239,14 +239,14 @@ cards:
         state_color: true
         icon: mdi:timer
         entities:
-          - entity: sensor.sunsynk_time_slot_1
+          - entity: sensor.esp32_deye_deye_time_slot_1
             name: From
-          - entity: sensor.sunsynk_time_slot_2
+          - entity: sensor.esp32_deye_deye_time_slot_2
             name: To
-          - entity: number.sunsynk_prog1_capacity
+          - entity: number.esp32_deye_deye_prog1_capacity
             name: SOC
             format: precision0
-      - entity: switch.sunsynk_prog2_grid_charge
+      - entity: switch.esp32_deye_deye_prog2_grid_charge
         type: custom:multiple-entity-row
         name: Program 2
         toggle: true
@@ -254,14 +254,14 @@ cards:
         state_color: true
         icon: mdi:timer
         entities:
-          - entity: sensor.sunsynk_time_slot_2
+          - entity: sensor.esp32_deye_deye_time_slot_2
             name: From
-          - entity: sensor.sunsynk_time_slot_3
+          - entity: sensor.esp32_deye_deye_time_slot_3
             name: To
-          - entity: number.sunsynk_prog2_capacity
+          - entity: number.esp32_deye_deye_prog2_capacity
             name: SOC
             format: precision0
-      - entity: switch.sunsynk_prog3_grid_charge
+      - entity: switch.esp32_deye_deye_prog3_grid_charge
         type: custom:multiple-entity-row
         name: Program 3
         toggle: true
@@ -269,14 +269,14 @@ cards:
         state_color: true
         icon: mdi:timer
         entities:
-          - entity: sensor.sunsynk_time_slot_3
+          - entity: sensor.esp32_deye_deye_time_slot_3
             name: From
-          - entity: sensor.sunsynk_time_slot_4
+          - entity: sensor.esp32_deye_deye_time_slot_4
             name: To
-          - entity: number.sunsynk_prog3_capacity
+          - entity: number.esp32_deye_deye_prog3_capacity
             name: SOC
             format: precision0
-      - entity: switch.sunsynk_prog4_grid_charge
+      - entity: switch.esp32_deye_deye_prog4_grid_charge
         type: custom:multiple-entity-row
         name: Program 4
         toggle: true
@@ -284,14 +284,14 @@ cards:
         state_color: true
         icon: mdi:timer
         entities:
-          - entity: sensor.sunsynk_time_slot_4
+          - entity: sensor.esp32_deye_deye_time_slot_4
             name: From
-          - entity: sensor.sunsynk_time_slot_5
+          - entity: sensor.esp32_deye_deye_time_slot_5
             name: To
-          - entity: number.sunsynk_prog4_capacity
+          - entity: number.esp32_deye_deye_prog4_capacity
             name: SOC
             format: precision0
-      - entity: switch.sunsynk_prog5_grid_charge
+      - entity: switch.esp32_deye_deye_prog5_grid_charge
         type: custom:multiple-entity-row
         name: Program 5
         toggle: true
@@ -299,14 +299,14 @@ cards:
         state_color: true
         icon: mdi:timer
         entities:
-          - entity: sensor.sunsynk_time_slot_5
+          - entity: sensor.esp32_deye_deye_time_slot_5
             name: From
-          - entity: sensor.sunsynk_time_slot_6
+          - entity: sensor.esp32_deye_deye_time_slot_6
             name: To
-          - entity: number.sunsynk_prog5_capacity
+          - entity: number.esp32_deye_deye_prog5_capacity
             name: SOC
             format: precision0
-      - entity: switch.sunsynk_prog6_grid_charge
+      - entity: switch.esp32_deye_deye_prog6_grid_charge
         type: custom:multiple-entity-row
         name: Program 6
         toggle: true
@@ -314,11 +314,11 @@ cards:
         state_color: true
         icon: mdi:timer
         entities:
-          - entity: sensor.sunsynk_time_slot_6
+          - entity: sensor.esp32_deye_deye_time_slot_6
             name: From
-          - entity: sensor.sunsynk_time_slot_1
+          - entity: sensor.esp32_deye_deye_time_slot_1
             name: To
-          - entity: number.sunsynk_prog6_capacity
+          - entity: number.esp32_deye_deye_prog6_capacity
             name: SOC
             format: precision0
     state_color: true
@@ -342,17 +342,17 @@ cards:
     cards:
       - type: entities
         entities:
-          - entity: switch.sunsynk_toggle_system_timer
+          - entity: switch.esp32_deye_deye_toggle_system_timer
             name: System Timer
         state_color: true
       - type: entities
         entities:
-          - entity: select.sunsynk_energy_pattern
+          - entity: select.esp32_deye_deye_energy_pattern
             name: Energy Pattern
         state_color: true
       - type: entities
         entities:
-          - entity: select.sunsynk_work_mode
+          - entity: select.esp32_deye_deye_work_mode
             name: Work Mode
         state_color: true
     view_layout:
@@ -364,8 +364,8 @@ cards:
           - type: custom:mushroom-template-card
             primary: Program 1
             secondary: >-
-              {{ states("sensor.sunsynk_time_slot_1") }} - {{
-              states("sensor.sunsynk_time_slot_2") }}
+              {{ states("sensor.esp32_deye_deye_time_slot_1") }} - {{
+              states("sensor.esp32_deye_deye_time_slot_2") }}
             icon: mdi:timer
             multiline_secondary: false
             badge_icon: mdi:lightning-bolt
@@ -374,18 +374,18 @@ cards:
             fill_container: true
           - type: entities
             entities:
-              - entity: select.sunsynk_prog1_charge_option
+              - entity: select.esp32_deye_deye_prog1_charge_option
                 name: Option
             state_color: true
       - type: entities
         entities:
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog1_capacity
+            entity: number.esp32_deye_deye_prog1_capacity
             name: Battery SOC
             hide_state: false
             grow: true
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog1_power
+            entity: number.esp32_deye_deye_prog1_power
             name: Power
             hide_state: false
             grow: true
@@ -398,8 +398,8 @@ cards:
           - type: custom:mushroom-template-card
             primary: Program 2
             secondary: >-
-              {{ states("sensor.sunsynk_time_slot_2") }} - {{
-              states("sensor.sunsynk_time_slot_3") }}
+              {{ states("sensor.esp32_deye_deye_time_slot_2") }} - {{
+              states("sensor.esp32_deye_deye_time_slot_3") }}
             icon: mdi:timer
             multiline_secondary: false
             badge_icon: mdi:lightning-bolt
@@ -408,18 +408,18 @@ cards:
             fill_container: true
           - type: entities
             entities:
-              - entity: select.sunsynk_prog2_charge_option
+              - entity: select.esp32_deye_deye_prog2_charge_option
                 name: Option
             state_color: true
       - type: entities
         entities:
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog2_capacity
+            entity: number.esp32_deye_deye_prog2_capacity
             name: Battery SOC
             hide_state: false
             grow: true
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog2_power
+            entity: number.esp32_deye_deye_prog2_power
             name: Power
             hide_state: false
             grow: true
@@ -432,8 +432,8 @@ cards:
           - type: custom:mushroom-template-card
             primary: Program 3
             secondary: >-
-              {{ states("sensor.sunsynk_time_slot_3") }} - {{
-              states("sensor.sunsynk_time_slot_4") }}
+              {{ states("sensor.esp32_deye_deye_time_slot_3") }} - {{
+              states("sensor.esp32_deye_deye_time_slot_4") }}
             icon: mdi:timer
             multiline_secondary: false
             badge_icon: mdi:lightning-bolt
@@ -442,18 +442,18 @@ cards:
             fill_container: true
           - type: entities
             entities:
-              - entity: select.sunsynk_prog3_charge_option
+              - entity: select.esp32_deye_deye_prog3_charge_option
                 name: Option
             state_color: true
       - type: entities
         entities:
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog3_capacity
+            entity: number.esp32_deye_deye_prog3_capacity
             name: Battery SOC
             hide_state: false
             grow: true
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog3_power
+            entity: number.esp32_deye_deye_prog3_power
             name: Power
             hide_state: false
             grow: true
@@ -466,8 +466,8 @@ cards:
           - type: custom:mushroom-template-card
             primary: Program 4
             secondary: >-
-              {{ states("sensor.sunsynk_time_slot_4") }} - {{
-              states("sensor.sunsynk_time_slot_5") }}
+              {{ states("sensor.esp32_deye_deye_time_slot_4") }} - {{
+              states("sensor.esp32_deye_deye_time_slot_5") }}
             icon: mdi:timer
             multiline_secondary: false
             badge_icon: mdi:lightning-bolt
@@ -476,18 +476,18 @@ cards:
             fill_container: true
           - type: entities
             entities:
-              - entity: select.sunsynk_prog4_charge_option
+              - entity: select.esp32_deye_deye_prog4_charge_option
                 name: Option
             state_color: true
       - type: entities
         entities:
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog4_capacity
+            entity: number.esp32_deye_deye_prog4_capacity
             name: Battery SOC
             hide_state: false
             grow: true
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog4_power
+            entity: number.esp32_deye_deye_prog4_power
             name: Power
             hide_state: false
             grow: true
@@ -500,8 +500,8 @@ cards:
           - type: custom:mushroom-template-card
             primary: Program 5
             secondary: >-
-              {{ states("sensor.sunsynk_time_slot_5") }} - {{
-              states("sensor.sunsynk_time_slot_6") }}
+              {{ states("sensor.esp32_deye_deye_time_slot_5") }} - {{
+              states("sensor.esp32_deye_deye_time_slot_6") }}
             icon: mdi:timer
             multiline_secondary: false
             badge_icon: mdi:lightning-bolt
@@ -510,18 +510,18 @@ cards:
             fill_container: true
           - type: entities
             entities:
-              - entity: select.sunsynk_prog5_charge_option
+              - entity: select.esp32_deye_deye_prog5_charge_option
                 name: Option
             state_color: true
       - type: entities
         entities:
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog5_capacity
+            entity: number.esp32_deye_deye_prog5_capacity
             name: Battery SOC
             hide_state: false
             grow: true
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog5_power
+            entity: number.esp32_deye_deye_prog5_power
             name: Power
             hide_state: false
             grow: true
@@ -534,8 +534,8 @@ cards:
           - type: custom:mushroom-template-card
             primary: Program 6
             secondary: >-
-              {{ states("sensor.sunsynk_time_slot_6") }} - {{
-              states("sensor.sunsynk_time_slot_1") }}
+              {{ states("sensor.esp32_deye_deye_time_slot_6") }} - {{
+              states("sensor.esp32_deye_deye_time_slot_1") }}
             icon: mdi:timer
             multiline_secondary: false
             badge_icon: mdi:lightning-bolt
@@ -544,18 +544,18 @@ cards:
             fill_container: true
           - type: entities
             entities:
-              - entity: select.sunsynk_prog6_charge_option
+              - entity: select.esp32_deye_deye_prog6_charge_option
                 name: Option
             state_color: true
       - type: entities
         entities:
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog6_capacity
+            entity: number.esp32_deye_deye_prog6_capacity
             name: Battery SOC
             hide_state: false
             grow: true
           - type: custom:slider-entity-row
-            entity: number.sunsynk_prog6_power
+            entity: number.esp32_deye_deye_prog6_power
             name: Power
             hide_state: false
             grow: true
